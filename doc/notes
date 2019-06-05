@@ -146,9 +146,9 @@ MVC 容纳了大量视图技术，其中包括 JSP、Velocity、Tiles、iText �
 
     6.测试代码
         6.1 Test.java
-        6.2 TestMapper
-        6.3 TestService  TestServiceImpl
-        6.4 TestController
+        6.2 TestMapper.java
+        6.3 TestService.java  TestServiceImpl.java
+        6.4 TestController.java
         6.5 TestMapper.xml
 
     7.测试：
