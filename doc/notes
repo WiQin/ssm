@@ -1,0 +1,161 @@
+基于Maven的SSM总体架构设计
+<一>.Spring框架介绍
+    官网：https://spring.io/
+
+    1.1 Spring简介
+    Spring 是一个开源框架，是为了解决企业应用程序开发复杂性而创建的。
+    框架的主要优势之一就是其分层架构，分层架构允许您选择使用哪一个组件，同时为 JAVAEE 应用程序开发提供集成框架。
+    Spring 是应两个目标而出现的，第一是促进最佳编码实践。第二是让现有的框架更加易用。
+    所以，Spring 可以有效降低程序的耦合度，提高开发人员的生产效率，让开发人员能够编写更好、更小以及更干净的代码，使开发者可以只关注业务逻辑的开发。
+
+    1.2 Spring框架模块结构
+    Spring 框架是一个分层架构，由 7 个定义良好的模块组成。Spring 模块构建在核心容器之上，
+    核心容器定义了创建、配置和管理 bean 的方式：
+    组成 Spring 框架的每个模块（或组件）都可以单独存在，或者与其他一个或多个模块联合实
+    现。每个模块的功能如下：
+    （1）核心容器（Spring Core）：核心容器提供 Spring 框架的基本功能。核心容器的主要组件是BeanFactory，它是工厂模式的实现。
+BeanFactory 使用控制反转（IOC）模式将应用程序的配置和依赖性规范与实际的应用程序代码分开。
+    （2）Spring 上下文（Spring Context）：Spring 上下文是一个配置文件，向 Spring 框架提供上下文信息。
+Spring 上下文包括企业服务，例如 JNDI、EJB、电子邮件、国际化、校验和调度功能。
+    （3）Spring AOP：通过配置管理特性，Spring AOP 模块直接将面向方面的编程功能集成到了Spring 框架中。
+所以，可以很容易地使 Spring 框架管理的任何对象支持 AOP。Spring AOP 模块为基于 Spring 的应用程序中的对象提供了事务管理服务。通过使用 Spring AOP，不用依赖 EJB组件，就可以将声明性事务管理集成到应用程序中。
+    （4）Spring DAO：JDBC DAO 抽象层提供了有意义的异常层次结构，可用该结构来管理异常处理和不同数据库供应商抛出的错误消息。
+异常层次结构简化了错误处理，并且极大的降低了需要编写的异常代码数量（例如打开和关闭连接）。Spring DAO 的面向 JDBC 的异常遵从通用的 DAO异常层次结构。
+    （5）Spring ORM：Spring 框架插入了若干个 ORM 框架，从而提供了 ORM 的对象关系工具，其中包括 JDO、Hibernate 和 MyBatis。
+所有这些都遵从 Spring 的通用事务和 DAO 异常层次结构。
+    （6）Spring Web 模块：Web 上下文模块建立在应用程序上下文模块之上，为基于 Web 的应用程序提供了上下文。
+所以，Spring 框架支持与 Struts 的继承。Web 模块还简化了处理多部分请求以及将请求参数绑定到域对象的工作。
+    （7）Spring MVC 框架：MVC 框架是一个全功能的构建 Web 应用程序的 MVC 实现。通过策略接口，MVC 框架变为高度可配置的，
+MVC 容纳了大量视图技术，其中包括 JSP、Velocity、Tiles、iText 和 POI。
+    Spring 框架的功能可以用在任何 JAVAEE 服务器中，大多数功能也适用于不受管理的环境。
+    Spring 的核心要点是：支持不绑定到特定 JAVAEE 服务的可重用业务和数据访问对象。毫无疑问，
+    这样的对象可以在不同 JAVAEE 环境（Web 或 EJB）、独立应用程序、测试环境之间重用。
+
+    1.3 Spring 相关概念
+    （1）IOC（Inversion of Control 控制反转）
+     控制反转模式（也称作依赖性介入）的基本概念是：不创建对象，但是描述创建它们的方式。
+在代码中不直接与对象和服务连接，但在配置文件中描述哪一个组件需要哪一项服务。容器（在Spring 框架中是 IOC 容器）负责将这些联系在一起。
+    （2）DI（Dependency Injection 依赖注入）
+     依赖注入是指强制把组件的定义和组件的使用分开。
+    （3）AOP（Aspect-Oriented Programming 面向方面编程）
+     将程序中的交叉业务逻辑（比如安全，日志，事务等），封装成一个切面，然后注入到目标对象（具体业务逻辑）中区。
+ AOP 的目的是将复杂逻辑进行分离，抽取共性，让各部分实现的功能更为专一。
+    （4）Aspect（方面）：我们所关注的，可以被抽取的业务逻辑，如事务管理、日志、异常处理，泛指业务逻辑。
+    （5）JoinPoint（连接点）：切面可以被织入到目标对象的位置，泛指属性链接点，方法连接点。程序在执行过程中明确的点，通常是某个业务方法。
+    （6）Advice（通知）：在特定的连接点执行的动作，通知是指方面功能的实现代码，如日志代码。
+通知类型有前置通知、后置通知、环绕通知和异常处理通知。
+    （7）PointCut（切入点）：一组规定，规定一个切面可以织入到哪个类的哪些方法。即一组 JointPoint。
+    （8）Advisor（通知者）：是一种特殊的通知，规定了哪个切面，要织入到哪个类的哪些方法。
+    （9）TargetObject（目标对象）：包含连接点的对象，也称为被代理的对象，通常是具体的业务逻辑对
+       象。
+    （10）Proxy：aop 代理对象。
+    （11）Weaving：织入。将 Aspect 加入到程序代码的过程，对于 Spring AOP，由 ProxyFactory 或者
+    （12）ProxyFactoryBean 负责织入动作。
+
+<二>MyBatis框架介绍
+    最新网址：https://github.com/mybatis
+    相关网址：http://www.mybatis.org
+
+    2.1 MyBatis应用简介
+    MyBatis 是支持普通 SQL 查询，存储过程和高级映射的优秀持久层框架。MyBatis 消除了几
+    乎所有的 JDBC 代码和参数的手工设置以及结果集的检索。MyBatis 使用简单的 XML 或注解用
+    于配置和原始映射，将接口和 Java 的 POJOs（Plain Old Java Objects，普通的 Java 对象）映射成
+    数据库中的记录。
+    每个 MyBatis 应用程序主要都是使用 SqlSessionFactory 实例，一个 SqlSessionFactory 实例可
+    以通过 SqlSessionFactoryBuilder 获得。SqlSessionFactoryBuilder 可以从一个 xml 配置文件或者一
+    个预定义的配置类的实例获得。
+    用 xml 文件构建 SqlSessionFactory 实例是非常简单的事情。推荐在这个配置中使用类路径资
+    源（classpath resource），但你可以使用任何 Reader 实例，包括用文件路径或 file://开头的 url 创建
+    的实例。MyBatis 有一个实用类----Resources，它有很多方法，可以方便地从类路径及其他位置加
+    载资源。
+
+    2.2 MyBatis使用流程
+    1. 加载配置并初始化
+        触发条件：加载配置文件。
+        将 SQL 的配置信息加载成为一个个 MappedStatement 对性爱那个（包括了传入参数映射配置、
+        执行的 SQL 语句、结果映射配置），存储在内存中。
+    2. 接收调用请求
+        触发条件：调用 MyBatis 提供的 API。
+        传入参数：为 SQL 的 ID 和传入参数对象。
+        处理过程：将请求传递给下层的请求处理层进行处理。
+    3. 处理操作请求
+        触发条件：API 接口层传递请求过来
+        传入参数：为 SQL 的 ID 和传入参数对象
+        处理过程：
+        1） 根据 SQL 的 ID 查找对应的 MappedStatement 对象。
+        2） 根据传入参数对象解析 MappedStatement 对象，得到最终要执行的 SQL 和执行传入参数。
+        3） 获取数据库连接，根据得到的最终 SQL 语句和执行传入参数到数据库执行，并得到执行结果。
+        4） 根据 MappedStatement 对象中的结果映射配置对得到的执行结果进行转换处理，并得到最终的处理结果。
+        5） 释放连接资源。
+    4. 返回处理结果将最终的处理结果返回。
+
+<三> Maven
+    官方网站：http://maven.apache.org
+    Apache Maven 是一个软件项目管理和综合工具。基于项目对象模型（POM）的概念，Maven可以从一个中心资料片管理项目构建，报告和文件。
+
+    3.1 简介
+    Maven 是一个项目管理和综合工具。Maven 提供了开发人员构建一个完整的生命周期框架。
+    开发团队可以自动完成项目的基础工具建设，Maven 使用标准的目录结构和默认构建生命周期。
+    在多个开发团队环境时，Maven 可以设置按标准在非常短的时间里完成配置工作。
+    由于大部分项目的设置都很简单，并且可重复使用，Maven 让开发人员的工作更轻松，同时创建报表，检查，构建和测试自动化设置。
+
+    3.2 Maven资源库
+     1.Maven 本地资源库
+    Maven 的本地资源库是用来存储项目的依赖库，默认的文件夹是“.m2”目录，可能需要将其更改为另一个文件夹。
+     2. Maven 中央存储库
+    Maven 中央存储库是 Maven 用来下载所有项目的依赖库的默认位置。
+    3.如何从 Maven 远程存储库下载？如何添加远程库？
+    并非所有的库都存储在 Maven 的中央存储库，很多时候需要从其他位置添加一些远程仓库，而不是默认的中央存储库下载。
+    4.Maven 依赖机制
+    这里的文章是关于传统方式和 Maven 方式的依赖库的不同，并说明 Maven 会从哪里搜索这些库。
+    5.定制库到 Maven 本地资源库
+    很多库仍然不支持 Maven 的 pom.xml 的概念，可以参考 Maven 指南掌握如何包括“非 Maven支持”库到 Maven 本地资源库中。
+
+<四>项目搭建
+    1.新建项目
+    2.下载依赖包
+    3.搭建目录结构
+    4.配置相关文件
+        4.1 pom.xml
+            注：Oracle是收费的，所以jar没有授权给maven，需要手动引入
+        将jar包放在桌面上，进行命令行，执行以下命令：
+        mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -Dpackaging=jar -Dfile=ojdbc6.jar
+        4.2 spring-mvc.xml
+        4.3 spring-mybatis.xml
+        4.4 配置web.xml
+        4.5 jdbc.properties
+        4.6 log4j.properties
+
+    5.创建表
+
+    -- Create table
+    create table test
+    (
+        id    number,
+        test1 number,
+        test2 varchar2(64)
+    )
+    ;
+    -- Add comments to the table
+    comment on table test
+    is 'TestSSM的测试表';
+
+    --插入测试数据
+    insert into TEST (ID, TEST1, TEST2)
+    values ('1', '777', 'success');
+
+    6.测试代码
+        6.1 Test.java
+        6.2 TestMapper
+        6.3 TestService  TestServiceImpl
+        6.4 TestController
+        6.5 TestMapper.xml
+
+    7.测试：
+    http://localhost:8088/ssm_war_exploded/test/get?id=1
+
+
+
+
+
+
